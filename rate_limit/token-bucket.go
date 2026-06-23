@@ -13,14 +13,15 @@ var ErrTokenUnavailable = errors.New("token unavailable")
 type TokenBucket struct {
 	tokens    uint64     // Total Tokens in the bucket
 	tokenLock sync.Mutex // Lock used when adding/removing tokens from bucket
-	close     chan bool  // closing channel
+	closeChan chan bool  // closing channel
+	closed    bool
 }
 
 // NewTokenBucket creates a TokenBucket initally with with count tokens.
 // After each period the TokenBucket is reset to having that same number of tokens.
 // Caller must cancel the context to clean up resources
 func NewTokenBucket(ctx context.Context, count uint, period time.Duration) *TokenBucket {
-	bucket := TokenBucket{tokens: uint64(count), close: make(chan bool)}
+	bucket := TokenBucket{tokens: uint64(count), closeChan: make(chan bool)}
 	ticker := time.NewTicker(period)
 	go func(ctx context.Context) {
 		defer ticker.Stop()
@@ -30,7 +31,7 @@ func NewTokenBucket(ctx context.Context, count uint, period time.Duration) *Toke
 				return
 			case <-ticker.C:
 				bucket.fill(uint64(count))
-			case <-bucket.close:
+			case <-bucket.closeChan:
 				return
 			}
 		}
@@ -39,10 +40,15 @@ func NewTokenBucket(ctx context.Context, count uint, period time.Duration) *Toke
 }
 
 func (bucket *TokenBucket) Close() {
-	bucket.close <- true
+	bucket.closeChan <- true
+	close(bucket.closeChan)
+	bucket.closed = true
 }
 
 func (bucket *TokenBucket) Consume(ctx context.Context) error {
+	if bucket.closed {
+		return fmt.Errorf("bucket closed")
+	}
 	const lockRetryInterval = time.Millisecond
 
 	retry := time.NewTicker(lockRetryInterval)

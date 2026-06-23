@@ -18,6 +18,13 @@ func TestConsume(t *testing.T) {
 	require.ErrorContains(t, bucket.Consume(context.Background()), "token unavailable")
 }
 
+func TestClose(t *testing.T) {
+	bucket := NewTokenBucket(t.Context(), 1, time.Second)
+	bucket.Close()
+
+	require.ErrorContains(t, bucket.Consume(context.Background()), "bucket closed")
+}
+
 func TestConsumeStopsWaitingForLockWhenContextIsCancelled(t *testing.T) {
 	bucket := NewTokenBucket(t.Context(), 1, time.Second)
 	defer bucket.Close()
