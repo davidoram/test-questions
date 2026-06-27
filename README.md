@@ -22,7 +22,11 @@ Refill rate: 10 tokens/second
 3. Build a Thread-Safe Bounded Queue [queue](./queue/queue.go)
 
 
-4. Ring Hash 
+4. Consistent Hashing Ring [ring](./ring/ring.go)
+
+5. Dependency Resolver / Package Installer: Write a program to find the valid installation order for packages with complex dependencies (Topological Sort. Orders a DAG so that for every node u,v u comes before v). Detect and flag cyclic dependencies. [graph](./dependency/graph.go)
+
+
 2. SOLID principles
 
 * Single Responsibility Principle (SRP)
