@@ -57,3 +57,9 @@ func TestGetOnlyRoutesToKnownServers(t *testing.T) {
 		require.True(t, valid[got], "key %q routed to unknown server %q", key, got)
 	}
 }
+
+// func TestZeroServers(t *testing.T) {
+// 	servers := []string{}
+// 	r := NewRing(servers...)
+// 	require.Empty(t, r.Get("key-1"))
+// }

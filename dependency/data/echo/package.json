@@ -1,0 +1,7 @@
+{
+  "name": "echo",
+  "version": "1.0.0",
+  "dependencies": {
+    "charlie": "1.0.0"
+  }
+}

@@ -52,6 +52,7 @@ func (r *Ring) Add(server string) {
 	sort.Slice(r.keys, func(i, j int) bool { return r.keys[i] < r.keys[j] })
 }
 
+// Return the server that key is hashed to, or error if no servers
 func (r *Ring) Get(key string) string {
 	val := hashKey(key)
 	i := sort.Search(len(r.keys), func(i int) bool {

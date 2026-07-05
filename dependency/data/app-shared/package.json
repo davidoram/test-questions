@@ -1,0 +1,8 @@
+{
+  "name": "app-shared",
+  "version": "1.0.0",
+  "dependencies": {
+    "alpha": "1.0.0",
+    "echo": "1.0.0"
+  }
+}
