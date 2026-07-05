@@ -12,6 +12,15 @@ type FileResolver struct {
 	cache map[string]JSPackage
 }
 
+func NewFileResolver(path string) (error, FileResolver) {
+	resolver := FileResolver{
+		path:  path,
+		cache: map[string]JSPackage{},
+	}
+
+	return nil, resolver
+}
+
 func (r FileResolver) Resolve(name string) (error, JSPackage) {
 	if pkg, ok := r.cache[name]; ok {
 		return nil, pkg
@@ -48,15 +57,6 @@ func (r FileResolver) Packages() []JSPackage {
 	})
 
 	return packages
-}
-
-func NewFileResolver(path string) (error, FileResolver) {
-	resolver := FileResolver{
-		path:  path,
-		cache: map[string]JSPackage{},
-	}
-
-	return nil, resolver
 }
 
 func MakeGraphFromJS(path string, names ...string) (error, *Graph) {
