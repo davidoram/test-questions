@@ -21,12 +21,12 @@ func cmpLines(lines []*string, cmp func(a, b string) int) int {
 
 // advanceStream reads the next line from each scanner at the given indexes, populating lines.
 // Scanners that hit EOF are set to nil in the returned slice; lines entries for EOF scanners are set to nil.
-func advanceStream(inputs []*bufio.Scanner, indexes []int, lines []*string) (error, []*string, []*bufio.Scanner) {
+func advanceStream(inputs []*bufio.Scanner, indexes []int, lines []*string) ([]*string, []*bufio.Scanner, error) {
 	for _, idx := range indexes {
 		inp := inputs[idx]
 		if !inp.Scan() {
 			if inp.Err() != nil {
-				return inp.Err(), lines, inputs
+				return lines, inputs, inp.Err()
 			}
 			lines[idx] = nil
 			inputs[idx] = nil
@@ -36,7 +36,7 @@ func advanceStream(inputs []*bufio.Scanner, indexes []int, lines []*string) (err
 		}
 	}
 
-	return nil, lines, inputs
+	return lines, inputs, nil
 }
 
 // MergeStreams reads inputs a line at a time, and writes them to the out writer in low to high order as defined by the cmp function.
@@ -52,7 +52,7 @@ func MergeStreams(out *bufio.Writer, cmp func(a, b string) int, inputs ...*bufio
 		idx[i] = i
 	}
 	var err error
-	err, lines, inputs = advanceStream(inputs, idx, lines)
+	lines, inputs, err = advanceStream(inputs, idx, lines)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func MergeStreams(out *bufio.Writer, cmp func(a, b string) int, inputs ...*bufio
 			return err
 		}
 		// Advance the stream that we wrote from
-		err, lines, inputs = advanceStream(inputs, []int{advanceIdx}, lines)
+		lines, inputs, err = advanceStream(inputs, []int{advanceIdx}, lines)
 		if err != nil {
 			return err
 		}
