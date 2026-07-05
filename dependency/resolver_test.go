@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewFileResolver(t *testing.T) {
-	err, resolver := NewFileResolver("data")
+	resolver, err := NewFileResolver("data")
 	require.NoError(t, err)
 
 	require.Equal(t, "data", resolver.path)
@@ -16,10 +16,10 @@ func TestNewFileResolver(t *testing.T) {
 }
 
 func TestFileResolverResolve(t *testing.T) {
-	err, resolver := NewFileResolver("data")
+	resolver, err := NewFileResolver("data")
 	require.NoError(t, err)
 
-	err, pkg := resolver.Resolve("app-basic")
+	pkg, err := resolver.Resolve("app-basic")
 	require.NoError(t, err)
 
 	require.Equal(t, "app-basic", pkg.Name())
@@ -28,23 +28,23 @@ func TestFileResolverResolve(t *testing.T) {
 }
 
 func TestFileResolverResolveUsesCache(t *testing.T) {
-	err, resolver := NewFileResolver("data")
+	resolver, err := NewFileResolver("data")
 	require.NoError(t, err)
 
-	err, pkg := resolver.Resolve("alpha")
+	pkg, err := resolver.Resolve("alpha")
 	require.NoError(t, err)
 
 	resolver.path = filepath.Join("data", "missing")
-	err, cachedPkg := resolver.Resolve("alpha")
+	cachedPkg, err := resolver.Resolve("alpha")
 	require.NoError(t, err)
 	require.Equal(t, pkg, cachedPkg)
 }
 
 func TestFileResolverResolveMissingPackage(t *testing.T) {
-	err, resolver := NewFileResolver("data")
+	resolver, err := NewFileResolver("data")
 	require.NoError(t, err)
 
-	err, pkg := resolver.Resolve("missing")
+	pkg, err := resolver.Resolve("missing")
 
 	require.Error(t, err)
 	require.Empty(t, pkg)
@@ -79,11 +79,11 @@ func TestMakeGraphFromJS(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.start, func(t *testing.T) {
-			err, graph := MakeGraphFromJS("data", test.start)
+			graph, err := MakeGraphFromJS("data", test.start)
 			require.NoError(t, err)
 			require.Equal(t, test.isDAG, graph.IsDirectedAcyclicGraph())
 
-			err, dependencies := graph.TopologicalSort()
+			dependencies, err := graph.TopologicalSort()
 			if !test.isDAG {
 				require.Error(t, err)
 				require.Nil(t, dependencies)
@@ -97,7 +97,7 @@ func TestMakeGraphFromJS(t *testing.T) {
 }
 
 func TestMakeGraphFromJSMissingPath(t *testing.T) {
-	err, graph := MakeGraphFromJS(filepath.Join("data", "missing"), "app-basic")
+	graph, err := MakeGraphFromJS(filepath.Join("data", "missing"), "app-basic")
 
 	require.Error(t, err)
 	require.Nil(t, graph)

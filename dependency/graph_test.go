@@ -44,7 +44,7 @@ func TestTopologicalSort_straight(t *testing.T) {
 	g.AddNode("c")
 	g.AddEdge("a", "b")
 	g.AddEdge("b", "c")
-	err, nodes := g.TopologicalSort()
+	nodes, err := g.TopologicalSort()
 	require.Nil(t, err)
 	require.Equal(
 		t,
@@ -56,7 +56,7 @@ func TestTopologicalSort_straight(t *testing.T) {
 func TestTopologicalSort_one(t *testing.T) {
 	g := NewGraph()
 	g.AddNode("a")
-	err, nodes := g.TopologicalSort()
+	nodes, err := g.TopologicalSort()
 	require.Nil(t, err)
 	require.Equal(
 		t,
@@ -69,7 +69,7 @@ func TestTopologicalSort_two(t *testing.T) {
 	g := NewGraph()
 	g.AddNode("a")
 	g.AddNode("b")
-	err, nodes := g.TopologicalSort()
+	nodes, err := g.TopologicalSort()
 	require.Nil(t, err)
 	require.Equal(
 		t,
@@ -88,7 +88,7 @@ func TestTopologicalSort_branch(t *testing.T) {
 	g.AddEdge("a", "b")
 	g.AddEdge("a", "c")
 	g.AddEdge("c", "d")
-	err, nodes := g.TopologicalSort()
+	nodes, err := g.TopologicalSort()
 	require.Nil(t, err)
 	require.Equal(
 		t,
@@ -108,7 +108,7 @@ func TestTopologicalSort_branchjoin(t *testing.T) {
 	g.AddEdge("a", "c")
 	g.AddEdge("c", "d")
 	g.AddEdge("b", "d")
-	err, nodes := g.TopologicalSort()
+	nodes, err := g.TopologicalSort()
 	require.Nil(t, err)
 	require.Equal(
 		t,

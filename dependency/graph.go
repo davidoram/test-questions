@@ -118,9 +118,9 @@ func (ts *TopologicalSort) dfs(v Node) {
 	ts.stack = append(ts.stack, v.name)
 }
 
-func (g *Graph) TopologicalSort() (error, []string) {
+func (g *Graph) TopologicalSort() ([]string, error) {
 	if !g.IsDirectedAcyclicGraph() {
-		return fmt.Errorf("Not a DAG"), nil
+		return nil, fmt.Errorf("Not a DAG")
 	}
 	ts := TopologicalSort{g: g}
 	for _, v := range ts.g.nodes {
@@ -128,5 +128,5 @@ func (g *Graph) TopologicalSort() (error, []string) {
 			ts.dfs(v)
 		}
 	}
-	return nil, ts.stack
+	return ts.stack, nil
 }

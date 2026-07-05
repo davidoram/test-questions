@@ -22,15 +22,15 @@ func run(args []string, stdout *os.File) error {
 	path := args[0]
 	file := args[1]
 
-	err, graph := dependency.MakeGraphFromJS(path, file)
+	graph, err := dependency.MakeGraphFromJS(path, file)
 	if err != nil {
 		return err
 	}
 	if !graph.IsDirectedAcyclicGraph() {
-		return fmt.Errorf("Not a DAG %w", err)
+		return fmt.Errorf("not a DAG")
 	}
 
-	err, sorted := graph.TopologicalSort()
+	sorted, err := graph.TopologicalSort()
 	if err != nil {
 		return err
 	}

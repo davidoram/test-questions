@@ -12,32 +12,32 @@ type FileResolver struct {
 	cache map[string]JSPackage
 }
 
-func NewFileResolver(path string) (error, FileResolver) {
+func NewFileResolver(path string) (FileResolver, error) {
 	resolver := FileResolver{
 		path:  path,
 		cache: map[string]JSPackage{},
 	}
 
-	return nil, resolver
+	return resolver, nil
 }
 
-func (r FileResolver) Resolve(name string) (error, JSPackage) {
+func (r FileResolver) Resolve(name string) (JSPackage, error) {
 	if pkg, ok := r.cache[name]; ok {
-		return nil, pkg
+		return pkg, nil
 	}
 
 	data, err := os.ReadFile(filepath.Join(r.path, name, "package.json"))
 	if err != nil {
-		return err, JSPackage{}
+		return JSPackage{}, err
 	}
 
 	var pkg JSPackage
 	if err := json.Unmarshal(data, &pkg); err != nil {
-		return err, JSPackage{}
+		return JSPackage{}, err
 	}
 
 	r.cache[name] = pkg
-	return nil, pkg
+	return pkg, nil
 }
 
 func (r FileResolver) Packages() []JSPackage {
@@ -59,10 +59,10 @@ func (r FileResolver) Packages() []JSPackage {
 	return packages
 }
 
-func MakeGraphFromJS(path string, names ...string) (error, *Graph) {
-	err, resolver := NewFileResolver(path)
+func MakeGraphFromJS(path string, names ...string) (*Graph, error) {
+	resolver, err := NewFileResolver(path)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 
 	graph := NewGraph()
@@ -75,7 +75,7 @@ func MakeGraphFromJS(path string, names ...string) (error, *Graph) {
 		}
 		seen[name] = true
 
-		err, pkg := resolver.Resolve(name)
+		pkg, err := resolver.Resolve(name)
 		if err != nil {
 			return err
 		}
@@ -94,9 +94,9 @@ func MakeGraphFromJS(path string, names ...string) (error, *Graph) {
 
 	for _, name := range names {
 		if err := addPackage(name); err != nil {
-			return err, nil
+			return nil, err
 		}
 	}
 
-	return nil, graph
+	return graph, nil
 }
